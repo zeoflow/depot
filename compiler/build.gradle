@@ -1,0 +1,112 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    id("kotlin")
+    id "com.vanniktech.maven.publish"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
+}
+
+def antlrOut = "$buildDir/generated/antlr/grammar-gen/"
+sourceSets {
+    main.java.srcDirs += "src/main/grammar-gen"
+    main.java.srcDirs += antlrOut
+}
+
+configurations {
+    /**
+     * shadowed is used for dependencies which we jarjar into the library jar instead of adding it
+     * as a pom dependency
+     */
+    shadowed
+    // make sure shadowed dependencies show up as compileOnly so that normal compilation works
+    compileOnly.extendsFrom(shadowed)
+    // compiler tests run w/o shadowed classes so we should add those dependencies into test
+    // configuration
+    testCompile.extendsFrom(shadowed)
+    // for downstream tests, provide a configuration that includes the shadow output + other
+    // dependencies that are not shadowed
+    shadowAndImplementation.extendsFrom(shadow)
+    shadowAndImplementation.extendsFrom(implementation)
+}
+
+shadowJar {
+    // set classifier to empty string so that it doesn't append anything to the jar.
+    archiveClassifier = ""
+    configurations = [project.configurations.shadowed]
+    dependencies {
+        // antlr has dependencies on unrelated projects for its gui stuff, do not include them
+        exclude(dependency("org.abego.treelayout:.*"))
+        exclude(dependency("org.glassfish:.*"))
+        exclude(dependency("com.ibm.icu:.*"))
+    }
+}
+
+jar {
+    // set a classifier on this one so that the output does not clash with the output from
+    // shadowJar task. We should never use this directly as it won't have the shadowed classes that
+    // are necessary to run.
+    archiveClassifier = "before-jarjar"
+}
+
+// relocate all shadow dependencies
+task relocateShadowJar(type: ConfigureShadowRelocation) {
+    target = tasks.shadowJar
+    prefix = "com.zeoflow.depot.jarjarred"
+}
+
+tasks.shadowJar.dependsOn(tasks.relocateShadowJar)
+
+configurations {
+    // replace the standard jar with the one built by 'shadowJar' in both api and runtime variants
+    apiElements.outgoing.artifacts.clear()
+    apiElements.outgoing.artifact(shadowJar) {
+        builtBy shadowJar
+    }
+    runtimeElements.outgoing.artifacts.clear()
+    runtimeElements.outgoing.artifact(shadowJar) {
+        builtBy shadowJar
+    }
+}
+
+dependencies {
+    implementation(project(":common"))
+    implementation(project(":migration"))
+    implementation(project(":compiler-processing"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.10")
+    implementation("com.google.auto:auto-common:0.11")
+    implementation("com.google.auto.value:auto-value-annotations:1.6.3")
+    implementation("com.squareup:javapoet:1.13.0")
+    implementation("com.google.devtools.ksp:symbol-processing-api:1.5.0-1.0.0-alpha10")
+    shadowed("org.antlr:antlr4:4.7.1")
+    implementation("org.xerial:sqlite-jdbc:3.25.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.3.0")
+    implementation("commons-codec:commons-codec:1.10")
+    implementation("com.intellij:annotations:12.0")
+}
+
+def generateAntlrTask = task("generateAntlrGrammar", type: JavaExec) {
+    def outFolder = file(antlrOut)
+    outputs.dir(outFolder)
+    inputs.file("$projectDir/SQLite.g4")
+    classpath configurations.compileClasspath
+    main "org.antlr.v4.Tool"
+    args "SQLite.g4", "-visitor", "-o", new File(outFolder, "com/zeoflow/depot/parser").path,
+            "-package", "com.zeoflow.depot.parser"
+}
+
+tasks.findByName("compileKotlin").dependsOn(generateAntlrTask)
+tasks.findByName("compileKotlin").dependsOn(":runtime:jarRelease")
+tasks.findByName("compileKotlin").dependsOn(":sqlite:jarRelease")
+
+tasks.withType(KotlinCompile).configureEach {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn",
+                             "-Xopt-in=kotlin.contracts.ExperimentalContracts",
+                             "-Xopt-in=com.zeoflow.depot.compiler.processing.ExperimentalProcessingApi"]
+    }
+}
+
+tasks.withType(Test).configureEach {
+    it.systemProperty("com.zeoflow.depot.compiler.processing.strict", "true")
+}

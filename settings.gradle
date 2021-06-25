@@ -1,0 +1,37 @@
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+
+settings.pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+
+rootProject.name = "Depot"
+
+include ':app'
+
+include ':common'
+include ':compiler'
+include ':compiler-processing'
+include ':migration'
+include ':runtime'
+// TODO paging should extend android.paging.
+include ':paging'
+include ':dispatcher-runtime'
+include ':dispatcher-compiler'
+
+include ':sqlite'
+include ':sqlite-framework'

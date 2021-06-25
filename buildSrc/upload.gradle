@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 def isReleaseBuild() {
@@ -40,12 +40,12 @@ def getRepositoryPassword() {
 }
 
 afterEvaluate { project ->
-    project.generateDebugBuildConfig.enabled = false
-    project.generateReleaseBuildConfig.enabled = false
+//    project.generateDebugBuildConfig.enabled = false
+//    project.generateReleaseBuildConfig.enabled = false
     uploadArchives {
         repositories {
             mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                beforeDeployment { MavenPublication deployment -> signing.signPom(deployment) }
 
                 pom.groupId = GROUP
                 pom.artifactId = POM_ARTIFACT_ID
