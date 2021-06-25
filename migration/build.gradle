@@ -1,0 +1,9 @@
+plugins {
+    id("java-library")
+}
+
+dependencies {
+    implementation(project(":common"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.10")
+    implementation("com.google.code.gson:gson:2.8.0")
+}

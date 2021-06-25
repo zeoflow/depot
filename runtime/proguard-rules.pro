@@ -1,0 +1,2 @@
+-keep class * extends com.zeoflow.depot.DepotDatabase
+-dontwarn com.zeoflow.depot.paging.**
