@@ -23,13 +23,11 @@ rootProject.name = "Depot"
 
 include ':app'
 
-include ':common'
+include ':depot-common'
 include ':compiler'
 include ':compiler-processing'
 include ':migration'
 include ':runtime'
-// TODO paging should extend android.paging.
-include ':paging'
 include ':dispatcher-runtime'
 include ':dispatcher-compiler'
 

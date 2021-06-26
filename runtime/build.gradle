@@ -9,26 +9,13 @@ android {
     buildFeatures {
         aidl = true
     }
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-        releaseDebuggable {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-    }
 }
 
 dependencies {
-    api(project(":common"))
-    api(project(":sqlite"))
+    api(project(':depot-common'))
     api(project(":sqlite-framework"))
-    implementation('com.zeoflow:flow-kit:1.6.0') {
+
+    implementation('com.zeoflow:flow-kit:1.6.1') {
         exclude group: 'com.zeoflow', module: 'material-elements'
     }
     implementation("androidx.arch.core:core-runtime:2.0.1")

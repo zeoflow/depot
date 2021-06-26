@@ -1,25 +1,14 @@
 plugins {
     id("com.android.library")
+    id "com.vanniktech.maven.publish"
 }
 
 android {
     compileSdk 30
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-        releaseDebuggable {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-    }
 }
 
 dependencies {
-    api("androidx.annotation:annotation:1.0.0")
     api(project(":sqlite"))
+
+    api("androidx.annotation:annotation:1.0.0")
 }

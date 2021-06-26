@@ -70,9 +70,11 @@ configurations {
 }
 
 dependencies {
-    implementation(project(":common"))
+    // depot section
+    implementation(project(':depot-common'))
     implementation(project(":migration"))
     implementation(project(":compiler-processing"))
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.10")
     implementation("com.google.auto:auto-common:0.11")
     implementation("com.google.auto.value:auto-value-annotations:1.6.3")
