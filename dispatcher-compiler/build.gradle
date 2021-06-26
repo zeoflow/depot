@@ -5,20 +5,6 @@ plugins {
 
 android {
     compileSdk 30
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-        releaseDebuggable {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-    }
-
     defaultConfig {
         multiDexEnabled true
     }
@@ -29,7 +15,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(project(':depot-common'))
     implementation project(':dispatcher-runtime')
 
     implementation("com.zeoflow:jx:1.2.1")
@@ -40,8 +26,9 @@ dependencies {
     annotationProcessor "com.google.auto.service:auto-service:1.0-rc7"
     api "com.google.guava:guava:28.2-jre"
 
-//    compileOnly "net.ltgt.gradle.incap:incap:0.3"
-//    annotationProcessor "net.ltgt.gradle.incap:incap-processor:0.3"
+    // todo remove these lines
+    //  compileOnly "net.ltgt.gradle.incap:incap:0.3"
+    //  annotationProcessor "net.ltgt.gradle.incap:incap-processor:0.3"
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }

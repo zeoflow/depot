@@ -1,5 +1,6 @@
 plugins {
     id("kotlin")
+    id "com.vanniktech.maven.publish"
 }
 
 dependencies {
