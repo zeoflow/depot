@@ -22,6 +22,10 @@ import com.zeoflow.depot.ColumnInfo;
 import com.zeoflow.depot.Entity;
 import com.zeoflow.depot.PrimaryKey;
 
+import org.junit.Ignore;
+
+import java.util.Date;
+
 /**
  * A basic class representing an entity that is a row in a one-column database table.
  *
@@ -42,9 +46,18 @@ public class User
     @ColumnInfo(name = "word")
     private final String mWord;
 
+    private final Date date;
+
+    public User(@NonNull String mWord, Date date) {
+        this.mWord = mWord;
+        this.date = date;
+    }
+
+    @com.zeoflow.depot.Ignore
     public User(@NonNull String word)
     {
         this.mWord = word;
+        this.date = new Date();
     }
 
     @NonNull
@@ -53,4 +66,7 @@ public class User
         return this.mWord;
     }
 
+    public Date getDate() {
+        return date;
+    }
 }

@@ -56,6 +56,7 @@ public class AtomAnnotatedClass
     public final List<String> keyNameFields;
     public final List<ClassName> dbBeans;
     public final List<ClassName> entities;
+    public final List<ClassName> converters;
     public final Map<String, PreferenceKeyField> keyFieldMap;
     public final Map<String, Element> setterFunctionsList;
     public final Map<String, Element> getterFunctionsList;
@@ -79,6 +80,7 @@ public class AtomAnnotatedClass
         this.getterFunctionsList = new HashMap<>();
         this.dbBeans = new ArrayList<>();
         this.entities = new ArrayList<>();
+        this.converters = new ArrayList<>();
 
         for(AnnotationMirror annotationMirror : annotatedElement.getAnnotationMirrors())
         {
@@ -122,7 +124,25 @@ public class AtomAnnotatedClass
                             entities.add(ClassName.get(value, className));
                         }
                     }
+                } else if(annotationValue.getKey().getSimpleName().contentEquals("converters"))
+                {
+                    String[] values = annotationValue.getValue().getValue().toString().split(",");
+                    for(String value: values)
+                    {
+                        try
+                        {
+                            converters.add(ClassName.get(Class.forName(value)));
+                        } catch (ClassNotFoundException e)
+                        {
+                            List<String> components = Arrays.asList(value.split("\\."));
+                            String className = components.get(components.size() - 1);
+                            value = value.replaceFirst(".class", "");
+                            value = value.replaceFirst(className, "");
+                            converters.add(ClassName.get(value, className));
+                        }
+                    }
                 }
+                System.out.println("converters added");
             }
         }
 

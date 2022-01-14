@@ -16,6 +16,7 @@ package com.zeoflow.depot.adapter;
  * limitations under the License.
  */
 
+import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;

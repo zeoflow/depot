@@ -51,6 +51,13 @@ public @interface DepotDispatcher
     Class<?>[] dbBeans() default {};
 
     /**
+     * The list of database converters included in the database.
+     *
+     * @return The list of database converters.
+     */
+    Class<?>[] converters() default {};
+
+    /**
      * The list of database views included in the database. Each class turns into a view in the
      * database.
      *

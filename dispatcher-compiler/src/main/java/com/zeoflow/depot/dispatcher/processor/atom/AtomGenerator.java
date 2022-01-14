@@ -18,6 +18,7 @@ package com.zeoflow.depot.dispatcher.processor.atom;
 
 import androidx.annotation.NonNull;
 
+import com.zeoflow.depot.TypeConverters;
 import com.zeoflow.depot.dispatcher.processor.StringUtils;
 import com.zeoflow.jx.file.AnnotationSpec;
 import com.zeoflow.jx.file.ClassName;
@@ -71,6 +72,9 @@ public class AtomGenerator
                         .addModifiers(PUBLIC)
                         .superclass(ClassName.get(annotatedClazz.annotatedElement));
         builder.addAnnotation(generateClassAnnotation());
+        if (annotatedClazz.converters.size() != 0) {
+            builder.addAnnotation(generateConvertersAnnotation());
+        }
         builder.addField(addNumberOfThreadsField());
         builder.addField(addDatabaseWriterExecutorField());
         builder.addField(addInstanceField());
@@ -95,6 +99,21 @@ public class AtomGenerator
                 .addMember("entities", strFormat.toString(), entities.toArray())
                 .addMember("version", String.valueOf(annotatedClazz.depotDispatcher.version()))
                 .addMember("exportSchema", String.valueOf(annotatedClazz.depotDispatcher.exportSchema()))
+                .build();
+    }
+
+    private AnnotationSpec generateConvertersAnnotation() {
+        List<ClassName> entities = new ArrayList<>();
+        StringBuilder strFormat = new StringBuilder("{");
+        for (ClassName className : annotatedClazz.converters)
+        {
+            strFormat.append("$T.class, ");
+            entities.add(ClassName.get(className.getPackage(), className.className()));
+        }
+        strFormat.delete(strFormat.lastIndexOf(","), strFormat.lastIndexOf(",") + 2);
+        strFormat.append("}");
+        return AnnotationSpec.builder(TypeConverters.class)
+                .addMember("value", strFormat.toString(), entities.toArray())
                 .build();
     }
 

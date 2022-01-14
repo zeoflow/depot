@@ -36,6 +36,9 @@ import com.zeoflow.depot.DepotDatabase;
                 WordDao.class,
                 UserDao.class
         },
+        converters = {
+                Converters.class
+        },
         version = 1,
         exportSchema = false
 )
