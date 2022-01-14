@@ -16,8 +16,6 @@
 
 package com.zeoflow.depot.dispatcher.processor.repository;
 
-import static com.zeoflow.depot.dispatcher.processor.atom.AtomGenerator.ATOM_CLASS_PREFIX;
-import static com.zeoflow.depot.dispatcher.processor.atom.AtomGenerator.FIELD_NAME_DATABASE_EXECUTOR;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -26,8 +24,6 @@ import androidx.annotation.NonNull;
 import com.zeoflow.depot.dispatcher.processor.PreferenceKeyField;
 import com.zeoflow.depot.dispatcher.processor.StringUtils;
 import com.zeoflow.depot.dispatcher.processor.atom.AtomGenerator;
-import com.zeoflow.depot.dispatcher.processor.PreferenceKeyField;
-import com.zeoflow.depot.dispatcher.processor.StringUtils;
 import com.zeoflow.jx.file.ClassName;
 import com.zeoflow.jx.file.FieldSpec;
 import com.zeoflow.jx.file.MethodSpec;
@@ -65,49 +61,10 @@ public class RepositoryGenerator {
                 .classBuilder(getClazzName())
                 .addModifiers(PUBLIC);
         builder.addField(getObjectDaoField());
-        builder.addFields(getLiveDataFieldSpecs());
         builder.addMethod(getInitMethod());
         builder.addMethods(addGetMethods());
         builder.addMethods(addVoidMethods());
         return builder.build();
-    }
-
-    private List<FieldSpec> getLiveDataFieldSpecs() {
-        List<FieldSpec> fieldSpecs = new ArrayList<>();
-        for (PreferenceKeyField keyField : this.annotatedClazz.keyFields) {
-            if (keyField.executableElement.getReturnType().getKind() == TypeKind.VOID) {
-                continue;
-            }
-            if (keyField.observable == null) {
-                continue;
-            }
-            TypeName typeName = ParameterSpec.builder(keyField.typeName, keyField.keyName.toLowerCase()).build().type;
-            if (!isType(typeName, getLiveDataClass())) {
-                continue;
-            }
-            switch (keyField.typeStringName) {
-                case "Boolean":
-                    typeName = TypeName.get(Boolean.class);
-                    break;
-                case "Int":
-                    typeName = TypeName.get(Integer.class);
-                    break;
-                case "Float":
-                    typeName = TypeName.get(Float.class);
-                    break;
-                case "Long":
-                    typeName = TypeName.get(Long.class);
-                    break;
-            }
-            FieldSpec.Builder field = FieldSpec.builder(
-                    typeName,
-                    getKeyFieldVariableName(keyField.variableName),
-                    Modifier.PRIVATE,
-                    FINAL
-            );
-            fieldSpecs.add(field.build());
-        }
-        return fieldSpecs;
     }
 
     private FieldSpec getObjectDaoField() {
@@ -127,25 +84,6 @@ public class RepositoryGenerator {
                 getObjectDaoFieldName(),
                 StringUtils.toLowerCamel(annotatedClazz.entityName)
         );
-        List<FieldSpec> fieldSpecs = new ArrayList<>();
-        for (PreferenceKeyField keyField : this.annotatedClazz.keyFields) {
-            if (keyField.executableElement.getReturnType().getKind() == TypeKind.VOID) {
-                continue;
-            }
-            if (keyField.observable == null) {
-                continue;
-            }
-            TypeName typeName = ParameterSpec.builder(keyField.typeName, keyField.keyName.toLowerCase()).build().type;
-            if (!isType(typeName, getLiveDataClass())) {
-                continue;
-            }
-            method.addStatement(
-                    "$N = $N.$N()",
-                    getKeyFieldVariableName(keyField.variableName),
-                    getObjectDaoFieldName(),
-                    keyField.keyName
-            );
-        }
         return method.build();
     }
 
@@ -182,8 +120,9 @@ public class RepositoryGenerator {
                     );
                 } else {
                     method.addStatement(
-                            "return $N",
-                            getKeyFieldVariableName(keyField.variableName)
+                            "return $N.$N()",
+                            getObjectDaoFieldName(),
+                            keyField.executableElement.getSimpleName()
                     );
                 }
             } else {
@@ -208,8 +147,10 @@ public class RepositoryGenerator {
                     );
                 } else {
                     method.addStatement(
-                            "return $N",
-                            getKeyFieldVariableName(keyField.variableName)
+                            "return $N.$N($N)",
+                            getObjectDaoFieldName(),
+                            keyField.executableElement.getSimpleName(),
+                            methodParams.toString()
                     );
                 }
             }
@@ -297,6 +238,9 @@ public class RepositoryGenerator {
     }
 
     private String getKeyFieldReturnName(String variableName) {
+        if (variableName.toLowerCase().startsWith("get")) {
+            return StringUtils.toLowerCamel(variableName);
+        }
         return "get" + StringUtils.toUpperCamel(variableName);
     }
 

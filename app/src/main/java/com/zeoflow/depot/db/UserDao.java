@@ -22,6 +22,7 @@ import com.zeoflow.depot.Dao;
 import com.zeoflow.depot.Insert;
 import com.zeoflow.depot.OnConflictStrategy;
 import com.zeoflow.depot.Query;
+import com.zeoflow.depot.dispatcher.Observable;
 
 import java.util.List;
 
@@ -55,5 +56,9 @@ public interface UserDao
 
     @Query("DELETE FROM user_table")
     void deleteAll();
+
+    @Query("SELECT * FROM user_table WHERE word=:word ORDER BY word ASC")
+    @Observable
+    LiveData<Word> getUnk(String word);
 
 }
