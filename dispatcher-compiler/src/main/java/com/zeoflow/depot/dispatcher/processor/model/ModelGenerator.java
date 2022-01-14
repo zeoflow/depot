@@ -16,7 +16,6 @@
 
 package com.zeoflow.depot.dispatcher.processor.model;
 
-import static com.zeoflow.depot.dispatcher.processor.atom.AtomGenerator.ATOM_CLASS_PREFIX;
 import static com.zeoflow.depot.dispatcher.processor.repository.RepositoryGenerator.REPOSITORY_CLASS_PREFIX;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -26,8 +25,6 @@ import androidx.annotation.NonNull;
 import com.zeoflow.depot.dispatcher.processor.PreferenceKeyField;
 import com.zeoflow.depot.dispatcher.processor.StringUtils;
 import com.zeoflow.depot.dispatcher.processor.atom.AtomGenerator;
-import com.zeoflow.depot.dispatcher.processor.PreferenceKeyField;
-import com.zeoflow.depot.dispatcher.processor.StringUtils;
 import com.zeoflow.jx.file.ClassName;
 import com.zeoflow.jx.file.FieldSpec;
 import com.zeoflow.jx.file.MethodSpec;
@@ -67,7 +64,6 @@ public class ModelGenerator {
                 .classBuilder(getClazzName())
                 .addModifiers(PUBLIC);
         builder.addField(getObjectDaoField());
-        builder.addFields(getLiveDataFieldSpecs());
         builder.addMethod(getInitMethod());
         builder.addMethods(addGetMethods());
         builder.addMethods(addVoidMethods());
@@ -84,44 +80,6 @@ public class ModelGenerator {
         ).build();
     }
 
-    private List<FieldSpec> getLiveDataFieldSpecs() {
-        List<FieldSpec> fieldSpecs = new ArrayList<>();
-        for (PreferenceKeyField keyField : this.annotatedClazz.keyFields) {
-            if (keyField.executableElement.getReturnType().getKind() == TypeKind.VOID) {
-                continue;
-            }
-            if (keyField.observable == null) {
-                continue;
-            }
-            TypeName typeName = ParameterSpec.builder(keyField.typeName, keyField.keyName.toLowerCase()).build().type;
-            if (!isType(typeName, getLiveDataClass())) {
-                continue;
-            }
-            switch (keyField.typeStringName) {
-                case "Boolean":
-                    typeName = TypeName.get(Boolean.class);
-                    break;
-                case "Int":
-                    typeName = TypeName.get(Integer.class);
-                    break;
-                case "Float":
-                    typeName = TypeName.get(Float.class);
-                    break;
-                case "Long":
-                    typeName = TypeName.get(Long.class);
-                    break;
-            }
-            FieldSpec.Builder field = FieldSpec.builder(
-                    typeName,
-                    getKeyFieldVariableName(keyField.variableName),
-                    Modifier.PRIVATE,
-                    FINAL
-            );
-            fieldSpecs.add(field.build());
-        }
-        return fieldSpecs;
-    }
-
     private MethodSpec getInitMethod() {
         MethodSpec.Builder method = MethodSpec.constructorBuilder();
         method.addModifiers(PUBLIC);
@@ -130,25 +88,6 @@ public class ModelGenerator {
                 getRepositoryDaoFieldName(),
                 getRepositoryClassName()
         );
-        List<FieldSpec> fieldSpecs = new ArrayList<>();
-        for (PreferenceKeyField keyField : this.annotatedClazz.keyFields) {
-            if (keyField.executableElement.getReturnType().getKind() == TypeKind.VOID) {
-                continue;
-            }
-            if (keyField.observable == null) {
-                continue;
-            }
-            TypeName typeName = ParameterSpec.builder(keyField.typeName, keyField.keyName.toLowerCase()).build().type;
-            if (!isType(typeName, getLiveDataClass())) {
-                continue;
-            }
-            method.addStatement(
-                    "$N = $N.$N()",
-                    getKeyFieldVariableName(keyField.variableName),
-                    getRepositoryDaoFieldName(),
-                    getKeyFieldReturnName(keyField.variableName)
-            );
-        }
         return method.build();
     }
 
@@ -174,56 +113,52 @@ public class ModelGenerator {
                     typeName = TypeName.get(Long.class);
                     break;
             }
-            if (isType(typeName, getLiveDataClass()) && keyField.observable != null) {
-                MethodSpec.Builder method = MethodSpec.methodBuilder(getKeyFieldReturnName(keyField.variableName));
-                method.returns(typeName);
-                method.addStatement(
-                        "return $N",
-                        getKeyFieldVariableName(keyField.variableName)
-                );
-                method.addModifiers(PUBLIC);
-                methods.add(method.build());
-            } else if(!isType(typeName, getLiveDataClass())) {
-                if (parametersList.size() == 0) {
-                    MethodSpec.Builder method = MethodSpec.methodBuilder(getKeyFieldReturnName(keyField.variableName));
-                    method.returns(typeName);
-                    // TODO DepotChanges -->> add them when migrating to maven.
-                    //  Changes: added `mRepository` field for each getter call.
+            MethodSpec.Builder method = MethodSpec.methodBuilder(getKeyFieldReturnName(keyField.variableName));
+            method.returns(typeName);
+            method.addModifiers(PUBLIC);
+            if (parametersList.size() == 0) {
+                if (!isType(typeName, getLiveDataClass()) || keyField.observable == null) {
+                    method.addStatement(
+                            "return $N()",
+                            getFieldReturnName(keyField.keyName)
+                    );
+                } else {
                     method.addStatement(
                             "return $N.$N()",
                             getRepositoryDaoFieldName(),
-                            getKeyFieldReturnName(keyField.keyName)
+                            keyField.executableElement.getSimpleName()
                     );
-                    method.addModifiers(PUBLIC);
-                    methods.add(method.build());
-                } else {
-                    MethodSpec.Builder method = MethodSpec.methodBuilder(getKeyFieldReturnName(keyField.variableName));
-                    method.returns(typeName);
-                    StringBuilder methodParams = new StringBuilder();
-                    for (int index = 0; index < parametersList.size(); index++) {
-                        VariableElement element = parametersList.get(index);
-                        ParameterSpec.Builder param = ParameterSpec.builder(
-                                TypeName.get(element.asType()),
-                                String.valueOf(element.getSimpleName())
-                        );
-                        method.addParameter(param.build());
-                        methodParams.append(element.getSimpleName());
-                        if (index < parametersList.size() - 1) {
-                            methodParams.append(", ");
-                        }
+                }
+            } else {
+                StringBuilder methodParams = new StringBuilder();
+                for (int index = 0; index < parametersList.size(); index++) {
+                    VariableElement element = parametersList.get(index);
+                    ParameterSpec.Builder param = ParameterSpec.builder(
+                            TypeName.get(element.asType()),
+                            String.valueOf(element.getSimpleName())
+                    );
+                    method.addParameter(param.build());
+                    methodParams.append(element.getSimpleName());
+                    if (index < parametersList.size() - 1) {
+                        methodParams.append(", ");
                     }
-                    // TODO DepotChanges -->> add them when migrating to maven.
-                    //  Changes: added `mRepository` field for each getter call.
+                }
+                if (!isType(typeName, getLiveDataClass()) || keyField.observable == null) {
+                    method.addStatement(
+                            "return $N($N)",
+                            getFieldReturnName(keyField.keyName),
+                            methodParams.toString()
+                    );
+                } else {
                     method.addStatement(
                             "return $N.$N($N)",
                             getRepositoryDaoFieldName(),
-                            getKeyFieldReturnName(keyField.keyName),
+                            keyField.executableElement.getSimpleName(),
                             methodParams.toString()
                     );
-                    method.addModifiers(PUBLIC);
-                    methods.add(method.build());
                 }
             }
+            methods.add(method.build());
         }
         return methods;
     }
@@ -288,6 +223,7 @@ public class ModelGenerator {
     private List<MethodSpec> addObserverMethods() {
         List<MethodSpec> methods = new ArrayList<>();
         for (PreferenceKeyField keyField : this.annotatedClazz.keyFields) {
+            List<? extends VariableElement> parametersList = keyField.executableElement.getParameters();
             TypeName typeName = ParameterSpec.builder(keyField.typeName, keyField.keyName.toLowerCase()).build().type;
             switch (keyField.typeStringName) {
                 case "Boolean":
@@ -306,9 +242,14 @@ public class ModelGenerator {
             if (!isType(typeName, getLiveDataClass()) || keyField.observable == null) {
                 continue;
             }
-            List<? extends VariableElement> parametersList = keyField.executableElement.getParameters();
             MethodSpec.Builder method = MethodSpec.methodBuilder(getKeyFieldObserverName(keyField.variableName));
             method.addModifiers(PUBLIC);
+            for (VariableElement itemParameter: parametersList) {
+                method.addParameter(ParameterSpec.builder(
+                        TypeName.get(itemParameter.asType()),
+                        itemParameter.getSimpleName().toString()
+                ).build());
+            }
             ParameterSpec.Builder lifecycleOwner = ParameterSpec.builder(
                     getLifecycleOwnerPackage(),
                     "owner"
@@ -327,13 +268,31 @@ public class ModelGenerator {
                     "observer"
             );
             method.addParameter(lifecycleObserver.build());
-            method.addStatement(
-                    "$N.observe(owner, observer)",
-                    getKeyFieldVariableName(keyField.variableName)
-            );
+            if (parametersList.size() == 0) {
+                method.addStatement(
+                        "$N().observe(owner, observer)",
+                        getKeyFieldReturnName(keyField.variableName)
+                );
+            } else {
+                method.addStatement(
+                        "$N($N).observe(owner, observer)",
+                        getKeyFieldReturnName(keyField.variableName),
+                        parseParams(parametersList)
+                );
+            }
             methods.add(method.build());
         }
         return methods;
+    }
+
+    private String parseParams(List<? extends VariableElement> parametersList) {
+        StringBuilder params = new StringBuilder();
+        for (VariableElement parameter: parametersList) {
+            params.append(parameter.getSimpleName().toString());
+            params.append(", ");
+        }
+        params = new StringBuilder(params.substring(0, params.length() - 2));
+        return params.toString();
     }
 
     public class ClassBean {
@@ -400,6 +359,9 @@ public class ModelGenerator {
     }
 
     private String getKeyFieldReturnName(String variableName) {
+        if (variableName.toLowerCase().startsWith("get")) {
+            return StringUtils.toLowerCamel(variableName);
+        }
         return "get" + StringUtils.toUpperCamel(variableName);
     }
 
