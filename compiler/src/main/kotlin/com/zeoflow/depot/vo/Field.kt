@@ -98,6 +98,19 @@ data class Field(
                 result.add(name.substring(1).decapitalize(Locale.US))
             }
 
+            if (name.contains('_')) {
+                val nameSplits = name.split('_')
+                var nameFinal = ""
+                for (nameSplit in nameSplits) {
+                    if (nameFinal == "") {
+                        nameFinal = nameSplit
+                    } else {
+                        nameFinal += nameSplit.capitalize(Locale.US)
+                    }
+                }
+                result.add(nameFinal)
+            }
+
             if (typeName == TypeName.BOOLEAN || typeName == TypeName.BOOLEAN.box()) {
                 if (name.length > 2 && name.startsWith("is") && name[2].isUpperCase()) {
                     result.add(name.substring(2).decapitalize(Locale.US))

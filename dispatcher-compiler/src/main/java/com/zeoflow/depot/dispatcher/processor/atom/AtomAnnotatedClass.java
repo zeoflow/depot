@@ -142,7 +142,6 @@ public class AtomAnnotatedClass
                         }
                     }
                 }
-                System.out.println("converters added");
             }
         }
 
