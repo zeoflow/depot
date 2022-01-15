@@ -44,18 +44,18 @@ public class Word
     @ColumnInfo(name = "word")
     private final String mWord;
 
-    private final Date date;
+    private final Date date_s;
 
-    public Word(@NonNull String mWord, Date date) {
+    public Word(@NonNull String mWord, Date date_s) {
         this.mWord = mWord;
-        this.date = date;
+        this.date_s = date_s;
     }
 
     @com.zeoflow.depot.Ignore
     public Word(@NonNull String word)
     {
         this.mWord = word;
-        this.date = new Date();
+        this.date_s = new Date();
     }
 
     @NonNull
@@ -64,8 +64,8 @@ public class Word
         return this.mWord;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getDateS() {
+        return date_s;
     }
 
 }
