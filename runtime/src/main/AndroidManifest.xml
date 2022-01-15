@@ -14,11 +14,11 @@
   limitations under the License.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.zeoflow.depot">
+          package="com.zeoflow.depot.runtime">
 
     <application>
         <service
-                android:name=".MultiInstanceInvalidationService"
+                android:name="com.zeoflow.depot.MultiInstanceInvalidationService"
                 android:directBootAware="true"
                 android:exported="false"/>
     </application>
