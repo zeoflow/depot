@@ -61,4 +61,8 @@ public interface UserDao
     @Observable
     LiveData<Word> getUnk(String word);
 
+    @Query("SELECT * FROM user_table")
+    @Observable
+    LiveData<List<Word>> observeBooksHistory();
+
 }
