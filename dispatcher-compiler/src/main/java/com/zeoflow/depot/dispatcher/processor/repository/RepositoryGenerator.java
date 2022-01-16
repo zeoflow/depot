@@ -167,13 +167,47 @@ public class RepositoryGenerator {
             }
             List<? extends VariableElement> parametersList = keyField.executableElement.getParameters();
             MethodSpec.Builder method = MethodSpec.methodBuilder(getKeyFieldPutName(keyField.variableName));
-            if (parametersList.size() == 0) {
+            if (keyField.keyName.contains("delete")) {
+                if (parametersList.size() == 0) {
+                    method.addStatement(
+                            "$N.$N.execute(() -> $N.$N())",
+                            getAtomDBName(),
+                            AtomGenerator.FIELD_NAME_DATABASE_EXECUTOR,
+                            getObjectDaoFieldName(),
+                            keyField.executableElement.getSimpleName()
+                    );
+                } else {
+                    StringBuilder methodParams = new StringBuilder();
+                    for (int index = 0; index < parametersList.size(); index++) {
+                        VariableElement element = parametersList.get(index);
+                        ParameterSpec.Builder param = ParameterSpec.builder(
+                                TypeName.get(element.asType()),
+                                String.valueOf(element.getSimpleName())
+                        );
+                        method.addParameter(param.build());
+                        methodParams.append(element.getSimpleName());
+                        if (index < parametersList.size() - 1) {
+                            methodParams.append(", ");
+                        }
+                    }
+                    method.addStatement(
+                            "$N.$N.execute(() -> $N.$N($N))",
+                            getAtomDBName(),
+                            AtomGenerator.FIELD_NAME_DATABASE_EXECUTOR,
+                            getObjectDaoFieldName(),
+                            keyField.executableElement.getSimpleName(),
+                            methodParams.toString()
+                    );
+                }
+            } else if (parametersList.size() == 0) {
                 method.addStatement(
                         "$N.$N()",
                         getObjectDaoFieldName(),
                         keyField.executableElement.getSimpleName()
                 );
             } else {
+                // todo just because it has some parameters it doesn't mean that
+                //  it should run in the background thread
                 StringBuilder methodParams = new StringBuilder();
                 for (int index = 0; index < parametersList.size(); index++) {
                     VariableElement element = parametersList.get(index);
