@@ -126,7 +126,7 @@ public class ModelGenerator {
                     method.addStatement(
                             "return $N.$N()",
                             getRepositoryDaoFieldName(),
-                            keyField.executableElement.getSimpleName()
+                            getKeyFieldReturnName(keyField.variableName)
                     );
                 }
             } else {
