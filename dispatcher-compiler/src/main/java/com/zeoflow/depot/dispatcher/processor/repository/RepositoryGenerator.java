@@ -230,7 +230,6 @@ public class RepositoryGenerator {
                         methodParams.toString()
                 );
             }
-            method.addComment("addVoidMethod???");
             methods.add(method.build());
         }
         return methods;
