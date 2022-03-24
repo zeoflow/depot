@@ -15,9 +15,8 @@ dependencies {
     api(project(':depot-common'))
     api(project(":sqlite-framework"))
 
-    implementation('com.zeoflow:flow-kit:1.6.1') {
-        exclude group: 'com.zeoflow', module: 'material-elements'
-    }
+    implementation("com.zeoflow:startup:1.0.0")
+
     implementation("androidx.arch.core:core-runtime:2.0.1")
     compileOnly("androidx.paging:paging-common:2.0.0")
     compileOnly("androidx.lifecycle:lifecycle-livedata-core:2.0.0")

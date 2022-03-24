@@ -58,4 +58,8 @@ public interface WordDao
     @Query("DELETE FROM word_table")
     void deleteAll();
 
+    @Query("SELECT COUNT(word) FROM word_table WHERE word=:word")
+    @Observable
+    LiveData<Integer> pagesRead(String word);
+
 }

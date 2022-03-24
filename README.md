@@ -18,7 +18,7 @@ To use it:
 ```
 
 ## License
-    Copyright (C) 2021 ZeoFlow S.R.L.
+    Copyright (C) 2022 ZeoFlow S.R.L.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
