@@ -21,7 +21,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
-import com.zeoflow.initializer.ZeoFlowApp;
+import com.zeoflow.startup.AppInitializer;
 
 /**
  * Utility class for Depot.
@@ -55,7 +55,7 @@ public class Depot {
                     + " If you are trying to create an in memory database, use Depot"
                     + ".inMemoryDatabaseBuilder");
         }
-        return new DepotDatabase.Builder<>(ZeoFlowApp.getContext(), klass, name);
+        return new DepotDatabase.Builder<>(AppInitializer.getAppContext(), klass, name);
     }
 
     /**
