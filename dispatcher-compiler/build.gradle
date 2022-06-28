@@ -4,10 +4,15 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'com.zeoflow.depot.dispatcher.compiler'
+    compileSdk 32
+
     defaultConfig {
+        minSdk 21
+        targetSdk 32
         multiDexEnabled true
     }
+
     compileOptions {
         // Flag to enable support for the new language APIs
         coreLibraryDesugaringEnabled true

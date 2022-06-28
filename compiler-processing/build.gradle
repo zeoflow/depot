@@ -9,7 +9,7 @@ dependencies {
     api("org.jetbrains.kotlin:kotlin-stdlib:1.5.10")
     api("com.squareup:javapoet:1.13.0")
     api("com.squareup:kotlinpoet:1.8.0")
-    implementation("androidx.annotation:annotation:1.1.0")
+    implementation('androidx.annotation:annotation:1.4.0')
     implementation("com.google.guava:guava:29.0-jre")
     implementation("com.google.auto:auto-common:0.11")
     implementation("com.google.auto.value:auto-value-annotations:1.6.3")

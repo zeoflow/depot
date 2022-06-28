@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-    api("androidx.annotation:annotation:1.0.0")
+    api('androidx.annotation:annotation:1.4.0')
 }
 
 // Used by testImplementation in depot-compiler

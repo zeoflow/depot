@@ -10,5 +10,5 @@ android {
 dependencies {
     api(project(":sqlite"))
 
-    api("androidx.annotation:annotation:1.0.0")
+    api('androidx.annotation:annotation:1.4.0')
 }
