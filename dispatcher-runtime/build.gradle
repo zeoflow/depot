@@ -4,7 +4,13 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'com.zeoflow.depot.dispatcher.runtime'
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 32
+    }
 }
 
 dependencies {
