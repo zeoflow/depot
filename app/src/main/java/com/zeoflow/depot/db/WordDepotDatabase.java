@@ -16,9 +16,9 @@ package com.zeoflow.depot.db;
  * limitations under the License.
  */
 
-import com.zeoflow.depot.dispatcher.DispatcherName;
-import com.zeoflow.depot.dispatcher.DepotDispatcher;
 import com.zeoflow.depot.DepotDatabase;
+import com.zeoflow.depot.dispatcher.DepotDispatcher;
+import com.zeoflow.depot.dispatcher.DispatcherName;
 
 /**
  * This is the backend. The database. This used to be done by the OpenHelper.
@@ -42,7 +42,6 @@ import com.zeoflow.depot.DepotDatabase;
         version = 1,
         exportSchema = false
 )
-public abstract class WordDepotDatabase extends DepotDatabase
-{
+public abstract class WordDepotDatabase extends DepotDatabase {
     // empty constructor
 }

@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:contentDescription="@string/add_word"
-        android:src="@drawable/zf_cr_ic_crash_notification"/>
+        android:src="@drawable/ic_launcher_background"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

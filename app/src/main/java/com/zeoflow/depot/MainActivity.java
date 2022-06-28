@@ -18,25 +18,23 @@ package com.zeoflow.depot;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zeoflow.depot.adapter.WordListAdapter;
-import com.zeoflow.depot.db.WordDao_Model;
 import com.zeoflow.depot.db.Word;
-import com.zeoflow.app.Activity;
+import com.zeoflow.depot.db.WordDao_Model;
 
 import java.util.Random;
 
-public class MainActivity extends Activity
-{
+public class MainActivity extends AppCompatActivity {
 
     private WordDao_Model mWordViewModel;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
