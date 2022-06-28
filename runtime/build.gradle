@@ -5,7 +5,14 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'com.zeoflow.depot.runtime'
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 32
+    }
+
     buildFeatures {
         aidl = true
     }
@@ -15,7 +22,7 @@ dependencies {
     api(project(':depot-common'))
     api(project(":sqlite-framework"))
 
-    implementation("com.zeoflow:startup:1.0.0")
+    implementation('com.zeoflow:startup:1.0.1')
 
     implementation("androidx.arch.core:core-runtime:2.0.1")
     compileOnly("androidx.paging:paging-common:2.0.0")

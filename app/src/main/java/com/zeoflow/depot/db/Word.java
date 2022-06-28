@@ -36,8 +36,7 @@ import java.util.Date;
  */
 
 @Entity(tableName = "word_table")
-public class Word
-{
+public class Word {
 
     @PrimaryKey
     @NonNull
@@ -52,15 +51,13 @@ public class Word
     }
 
     @com.zeoflow.depot.Ignore
-    public Word(@NonNull String word)
-    {
+    public Word(@NonNull String word) {
         this.mWord = word;
         this.date_s = new Date();
     }
 
     @NonNull
-    public String getWord()
-    {
+    public String getWord() {
         return this.mWord;
     }
 

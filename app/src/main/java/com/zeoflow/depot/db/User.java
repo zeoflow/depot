@@ -22,8 +22,6 @@ import com.zeoflow.depot.ColumnInfo;
 import com.zeoflow.depot.Entity;
 import com.zeoflow.depot.PrimaryKey;
 
-import org.junit.Ignore;
-
 import java.util.Date;
 
 /**
@@ -38,8 +36,7 @@ import java.util.Date;
  */
 
 @Entity(tableName = "user_table")
-public class User
-{
+public class User {
 
     @PrimaryKey
     @NonNull
@@ -54,15 +51,13 @@ public class User
     }
 
     @com.zeoflow.depot.Ignore
-    public User(@NonNull String word)
-    {
+    public User(@NonNull String word) {
         this.mWord = word;
         this.date = new Date();
     }
 
     @NonNull
-    public String getWord()
-    {
+    public String getWord() {
         return this.mWord;
     }
 

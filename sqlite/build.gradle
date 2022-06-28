@@ -19,11 +19,17 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'com.zeoflow.sqlite'
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 32
+    }
 }
 
 dependencies {
-    api("androidx.annotation:annotation:1.0.0")
+    api('androidx.annotation:annotation:1.4.0')
 }
 
 // Used by testImplementation in depot-compiler

@@ -18,12 +18,12 @@ package com.zeoflow.depot.db;
 
 import androidx.lifecycle.LiveData;
 
-import com.zeoflow.depot.dispatcher.Observable;
-import com.zeoflow.depot.dispatcher.Void;
 import com.zeoflow.depot.Dao;
 import com.zeoflow.depot.Insert;
 import com.zeoflow.depot.OnConflictStrategy;
 import com.zeoflow.depot.Query;
+import com.zeoflow.depot.dispatcher.Observable;
+import com.zeoflow.depot.dispatcher.Void;
 
 import java.util.List;
 
@@ -37,8 +37,7 @@ import java.util.List;
  */
 
 @Dao
-public interface WordDao
-{
+public interface WordDao {
     @Observable
     @Query("SELECT * FROM word_table ORDER BY word ASC")
     LiveData<List<Word>> getAlphabetizedWords();
