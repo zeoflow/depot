@@ -36,7 +36,7 @@ dependencies {
     implementation project(':dispatcher-runtime')
     annotationProcessor project(':dispatcher-compiler')
 
-    implementation('com.zeoflow:startup:1.0.1')
+    implementation('com.zeoflow.startup:startup:1.1.0')
 
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
