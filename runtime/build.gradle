@@ -22,12 +22,12 @@ dependencies {
     api(project(':depot-common'))
     api(project(":sqlite-framework"))
 
-    implementation('com.zeoflow:startup:1.0.1')
+    implementation('com.zeoflow.startup:startup:1.1.0')
 
-    implementation("androidx.arch.core:core-runtime:2.0.1")
-    compileOnly("androidx.paging:paging-common:2.0.0")
-    compileOnly("androidx.lifecycle:lifecycle-livedata-core:2.0.0")
-    implementation("androidx.annotation:annotation-experimental:1.1.0-rc01")
+    implementation("androidx.arch.core:core-runtime:2.1.0")
+    compileOnly("androidx.paging:paging-common:3.1.1")
+    compileOnly("androidx.lifecycle:lifecycle-livedata-core:2.4.1")
+    implementation("androidx.annotation:annotation-experimental:1.2.0")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.5.10")
 }
 
